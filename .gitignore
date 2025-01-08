@@ -6,7 +6,9 @@ __pycache__/
 # Virtual environment
 env_l2s/
 .env/
-
+data/*
+models/*
+temp_upload
 # Model files
 *.h5
 *.hdf5

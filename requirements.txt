@@ -1,2 +1,7 @@
 python-pptx
+pdf2image
 streamlit==1.41.0 
+transformers 
+bitsandbytes 
+accelerate
+gtts
