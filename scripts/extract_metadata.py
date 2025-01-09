@@ -26,19 +26,19 @@ def extract_metadata_pptx(file_path, output_folder):
             "title": slide.shapes.title.text if slide.shapes.title else "Untitled",
             "text_content": " ".join([shape.text for shape in slide.shapes if hasattr(shape, "text")]),
             "images": [],
-            "tables": []
+            "tables": [],
+            "description": "" 
         }
 
-        # Extract images
         for shape in slide.shapes:
-            if shape.shape_type == 13:  # Picture shape
+            if shape.shape_type == 13: 
                 image_name = f"slide_{i + 1}_image_{len(slide_data['images']) + 1}.png"
                 image_path = os.path.join(slide_folder, image_name)
                 with open(image_path, "wb") as img_file:
                     img_file.write(shape.image.blob)
                 slide_data["images"].append(image_name)
 
-        # Extract tables
+
         for shape in slide.shapes:
             if shape.has_table:
                 table_data = []
@@ -49,7 +49,6 @@ def extract_metadata_pptx(file_path, output_folder):
 
         metadata.append(slide_data)
 
-    # Save metadata to JSON
     metadata_path = os.path.join(output_folder, f"{folder_name}.json")
     with open(metadata_path, "w", encoding="utf-8") as json_file:
         json.dump(metadata, json_file, ensure_ascii=False, indent=4)
@@ -64,7 +63,6 @@ def extract_metadata_pdf(file_path, output_folder):
 
     create_folder(slide_folder)
 
-    # Convert PDF to images
     pages = convert_from_path(file_path, dpi=300)
 
     for i, page in enumerate(pages):
@@ -75,7 +73,7 @@ def extract_metadata_pdf(file_path, output_folder):
         slide_data = {
             "page_number": i + 1,
             "images": [image_name],
-            "text_content": ""  # Placeholder for OCR or additional text extraction if needed
+            "text_content": ""  
         }
         metadata.append(slide_data)
 
@@ -99,7 +97,7 @@ def extract_metadata(file_path, output_folder="data/metadata"):
     else:
         print(f"Unsupported file type: {file_extension}")
 
-# Test example
+
 if __name__ == "__main__":
     test_file_pptx = "example.pptx"
     test_file_pdf = "example.pdf"

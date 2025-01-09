@@ -1,82 +1,116 @@
-# README: Chuyển Slide Thành Video Bài Giảng
+# GenLecture - Tự động tạo video bài giảng từ slide
 
-## Mô tả Dự án
+GenLecture là một ứng dụng giúp tự động chuyển đổi slide PowerPoint hoặc PDF thành video bài giảng có giọng nói. Ứng dụng sử dụng AI để sinh script bài giảng và chuyển văn bản thành giọng nói.
 
-Dự án này tự động hóa quá trình chuyển đổi các slide thành video bài giảng hoàn chỉnh, hỗ trợ giáo viên trong việc chuẩn bị nội dung bài giảng và mang lại trải nghiệm học tập trực quan cho học sinh. Hệ thống được chia thành các bước:
+## Tính năng
 
-1. **Extract Metadata**: Trích xuất nội dung và hình ảnh từ slide.
-2. **Slide to Script**: Chuyển đổi nội dung slide thành kịch bản.
-3. **Script to Audio**: Chuyển đổi kịch bản thành audio.
-4. **Audio and Slide to Video**: Kết hợp slide và audio để tạo video bài giảng.
+- Hỗ trợ file PowerPoint (PPTX) và PDF
+- Trích xuất metadata và hình ảnh từ slide
+- Sinh script bài giảng tự động với 2 lựa chọn model:
+  - Google Gemini Pro
+  - Qwen-1.5B
+- Chuyển văn bản thành giọng nói tiếng Việt
+- Tạo video bài giảng với hình ảnh và âm thanh
+- Gộp tất cả video slide thành một video hoàn chỉnh
+- Giao diện web thân thiện với người dùng
 
-## Cấu trúc Thư mục
+## Cấu trúc thư mục
 
 ```
-project/
-│
+GenLecture/
 ├── data/
-│   ├── input/          # Slide gốc (file PowerPoint hoặc PDF)
-│   ├── metadata/       # Metadata trích xuất từ slide (JSON)
-│   ├── scripts/        # Kịch bản bài giảng
-│   ├── audio/          # File âm thanh (MP3)
-│   └── output/         # Video bài giảng
-│
+│   ├── input/          # Thư mục chứa file slide đầu vào
+│   ├── metadata/       # Metadata và hình ảnh được trích xuất
+│   ├── scripts/        # Script bài giảng được sinh bởi AI
+│   ├── audio/          # File âm thanh được tạo từ script
+│   └── output/         # Video đầu ra
+│       └── videos/     # Video cho từng slide và video cuối cùng
 ├── scripts/
-│   ├── extract_metadata.py  # Trích xuất metadata từ slide
-│   ├── slide_to_script.py   # Chuyển đổi slide thành kịch bản
-│   ├── script_to_audio.py   # Chuyển đổi kịch bản thành âm thanh
-│   └── audio_slide_to_video.py # Tạo video từ slide và âm thanh
-│
-├── README.md           # Mô tả dự án
-└── requirements.txt     # Danh sách thư viện Python cần thiết
+│   ├── app.py                     # Giao diện web Streamlit
+│   ├── extract_metadata.py        # Trích xuất metadata từ slide
+│   ├── generate_description_image.py  # Sinh mô tả cho hình ảnh
+│   ├── slide_to_script.py         # Sinh script bài giảng
+│   ├── script_to_audio.py         # Chuyển script thành audio
+│   └── audio_slide_to_video.py    # Tạo video từ slide và audio
+└── .env                # File cấu hình API key và model mặc định
 ```
 
-## Hướng dẫn Sử dụng
+## Yêu cầu hệ thống
 
-### 1. Cài đặt môi trường
+- Python 3.8 trở lên
+- PowerPoint (để xử lý file PPTX)
+- [Poppler](https://github.com/oschwartz10612/poppler-windows/releases/) (để xử lý PDF)
+- [ImageMagick](https://imagemagick.org/script/download.php) (để xử lý video)
 
-Cài đặt các thư viện cần thiết:
+## Cài đặt
 
+1. Clone repository:
+```bash
+git clone https://github.com/yourusername/GenLecture.git
+cd GenLecture
+```
+
+2. Tạo môi trường ảo và kích hoạt:
+```bash
+python -m venv env_l2s
+source env_l2s/bin/activate  # Linux/Mac
+env_l2s\Scripts\activate     # Windows
+```
+
+3. Cài đặt các thư viện cần thiết:
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. Các bước thực hiện
-
-Bạn có thể chạy dòng lệnh sau để xem giao diện upload slide đơn giản
-```bash
-streamlit run app.py
+4. Cấu hình file .env:
+```env
+GEMINI_API_KEY=your_api_key_here
+DEFAULT_MODEL=qwen  # hoặc gemini
 ```
 
-Hoặc bạn có thể chạy thử để test từng phase của project chạy
-#### a. Trích xuất Metadata
+5. Cài đặt Poppler và ImageMagick:
+   - Tải và cài đặt Poppler
+   - Tải và cài đặt ImageMagick (chọn "Install legacy utilities")
+   - Thêm đường dẫn vào PATH hoặc cập nhật trong code
 
-Chạy script để trích xuất metadata từ slide:
+## Sử dụng
 
+1. Khởi động ứng dụng web:
 ```bash
-python scripts/extract_metadata.py
+streamlit run scripts/app.py
 ```
 
-File metadata sẽ được lưu trong thư mục `data/metadata/`.
+2. Trên giao diện web:
+   - Tải lên file slide (PPTX hoặc PDF)
+   - Chọn model để sinh script (Gemini hoặc Qwen)
+   - Nhấn nút "Generate Script"
+   - Đợi quá trình xử lý hoàn tất
+   - Xem preview video slide đầu tiên
 
-#### b. Chuyển đổi Kịch bản thành Audio
+3. Kết quả:
+   - Script được lưu trong `data/scripts/scripts.json`
+   - Audio được lưu trong `data/audio/`
+   - Video từng slide được lưu trong `data/output/videos/`
+   - Video cuối cùng được lưu tại `data/output/final_lecture.mp4`
 
-Chạy script để chuyển kịch bản thành audio:
+## Quy trình xử lý
 
-```bash
-python scripts/script_to_audio.py
-```
+1. **Trích xuất metadata**:
+   - Đọc file PPTX/PDF
+   - Trích xuất text, hình ảnh
+   - Lưu metadata dạng JSON
 
-File audio sẽ được lưu trong thư mục `data/audio/`.
+2. **Sinh script**:
+   - Sử dụng AI (Gemini hoặc Qwen) để sinh script
+   - Tối ưu hóa nội dung cho bài giảng
+   - Lưu script cho từng slide
 
+3. **Tạo audio**:
+   - Chuyển script thành giọng nói
+   - Sử dụng Google Text-to-Speech
+   - Tạo file MP3 cho từng slide
 
-## Yêu cầu Hệ thống
-
-- Python 3.8 trở lên
-- Thư viện:
-  - `transformers`
-  - `gtts`
-  - `moviepy`
-  - `python-pptx`
-  - `pdf2image`
-
+4. **Tạo video**:
+   - Kết hợp hình ảnh slide và audio
+   - Tạo video cho từng slide
+   - Gộp tất cả thành video cuối cùng

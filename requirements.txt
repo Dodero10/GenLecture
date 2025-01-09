@@ -5,3 +5,14 @@ transformers
 bitsandbytes 
 accelerate
 gtts
+transformers
+pillow
+torch 
+torchvision 
+transformers 
+pillow
+moviepy
+timm 
+einop
+comtypes
+google-generativeai
